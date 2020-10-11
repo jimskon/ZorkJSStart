@@ -116,10 +116,15 @@ function Room(node) {
   }
   this.describe = function() {
     var self=this;
-    result=this.description+"<br/>You see:<br/>";
-    this.items.forEach(function(item) {
-      result+=item+"<br/>";
-    });
+    result=this.description;
+    if (this.items.length > 0) {
+      result+="<br/>You see:<br/>";
+      this.items.forEach(function(item) {
+        result+=item+"<br/>";
+      });
+    } else {
+      result+="<br/>Nothing in this room.";
+    }
     printLine(result);
   };
   this.lookAround = function() {
