@@ -97,7 +97,7 @@ function Room(node) {
   this.description=$(node).find('>description').text();
   this.action=$(node).find('>action').text();
   self.items=[];
-  self. borders=[]
+  self.borders=[]
   // find things in room
   $(node).children().each(function(index) {
     tag=this.nodeName;
