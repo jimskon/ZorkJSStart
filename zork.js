@@ -60,63 +60,67 @@ function setupWorld(xml) {
 
 // World Class.  Contains all top level objects
 // like rooms, items, creatures, etc
-function World(map) {
-  console.log("World");
-  var self=this;
-  self.location="Entrance";
-  self.inventory=[];
-  self.rooms=[];
-  self.items=[];
-  // Create associative lists of rooms, items, containerss, and creatures in world
-  // works by going through all child of world
-  map.children().each(function(index) {
-    tag=this.nodeName;
-    // Rooms are put in an associative array, mapping room name to room object
-    if (tag=="room") {
-      let room = new Room(this);
-      // add room to associative list of rooms
-      self.rooms[room['name']]=room;
-    // Items are stored in an  array, mapping room name to room objec
-    } else if (tag=="item") {
-      let item = new Item(this);
-      self.items[item['name']]=item;
-    // Process other things in world
-    }
-  });
-  console.log(self.rooms);
-
-
+class World {
+  constructor(map) {
+    console.log("World");
+    var self=this;
+    self.location="Entrance";
+    self.inventory=[];
+    self.rooms=[];
+    self.items=[];
+    // Create associative lists of rooms, items, containerss, and creatures in world
+    // works by going through all child of world
+    map.children().each(function(index) {
+      var tag=this.nodeName;
+      // Rooms are put in an associative array, mapping room name to room object
+      if (tag=="room") {
+        let room = new Room(this);
+        // add room to associative list of rooms
+        self.rooms[room['name']]=room;
+      // Items are stored in an  array, mapping room name to room objec
+      } else if (tag=="item") {
+        let item = new Item(this);
+        self.items[item['name']]=item;
+      // Process other things in world
+      }
+    });
+    console.log(self.rooms);
+  }
 }
 
 // Room class
 // Contains all room information
 // and methods for using a room
-function Room(node) {
-  var self=this;
-  this.name=$(node).find('>name').text();
-  this.description=$(node).find('>description').text();
-  this.action=$(node).find('>action').text();
-  self.items=[];
-  self.borders=[]
-  // find things in room
-  $(node).children().each(function(index) {
-    tag=this.nodeName;
-    if (tag=="item") {
-      self.items.push($(this).text());
-    } else if (tag=="border") {
-        let border = new Border(this);
-        self.borders.push(border);
-    }
-  });
-  this.enter = function() {
+class Room {
+  constructor(node) {
+    var self=this;
+    this.name=$(node).find('>name').text();
+    this.description=$(node).find('>description').text();
+    this.action=$(node).find('>action').text();
+    self.items=[];
+    self.borders=[]
+    // find things in room
+    $(node).children().each(function(index) {
+      var tag=this.nodeName;
+      if (tag=="item") {
+        self.items.push($(this).text());
+      } else if (tag=="border") {
+          let border = new Border(this);
+          self.borders.push(border);
+      }
+    });
+  }
+
+  enter() {
     this.describe();
     if (this.action == "exit") {
       printLine("The game is over!");
     }
   }
-  this.describe = function() {
+
+  describe() {
     var self=this;
-    result=this.description;
+    var result=this.description;
     if (this.items.length > 0) {
       result+="<br/>You see:<br/>";
       this.items.forEach(function(item) {
@@ -127,19 +131,21 @@ function Room(node) {
     }
     printLine(result);
   };
-  this.lookAround = function() {
+
+  lookAround() {
     this.borders.forEach(function(b) {
       printLine("If you go "+b.direction+" you will go to "+b.name+".");
     });
   };
-  this.checkBorder = function(dir) {
+
+  checkBorder(dir) {
   // Look around the boarders.  if the command given matches
   // a border, return that name of that room
     var to="";
     this.borders.forEach(function(b) {
       if (b.direction==dir) {
         console.log("goto:",b.name);
-        to= b.name;
+         to = b.name;
       }
     });
     return to;
@@ -150,17 +156,21 @@ function Room(node) {
 // Item class
 // needs to be completed
 // including methods for using items
-function Item(node) {
-  this.name=$(node).find('>name').text();
-  // finish creating item
+class Item {
+  constructor(node) {
+    this.name=$(node).find('>name').text();
+    // finish creating item
+  }
 }
 
 // Border Class
 // Used to manage conections between rooms
-function Border(node) {
-  this.name=$(node).find('>name').text();
-  this.direction=$(node).find('>direction').text();
-  // finish creating item
+class Border {
+  constructor(node) {
+    this.name=$(node).find('>name').text();
+    this.direction=$(node).find('>direction').text();
+    // finish creating item
+  }
 }
 
 // routine to take an entered command and process it's acction
